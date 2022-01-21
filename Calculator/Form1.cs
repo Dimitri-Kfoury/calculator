@@ -4,7 +4,7 @@ namespace Calculator
 {
     public partial class Form1 : Form
     {
-        private Regex regex = new Regex(@"^[0-9]+\+[0-9]+$"); // regex for pattern of a sum (ie : 1 + 1)
+        private Regex regex = new Regex(@"^([0-9]+)([\+\-\/\*])([0-9]+)$"); // regex for pattern of an operation (ie : 1 + 1)
 
         public Form1()
         {
@@ -17,15 +17,55 @@ namespace Calculator
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void equals_Click(object sender, EventArgs e)
         {
-            
-            if (textBox1.Text != "" && regex.IsMatch(textBox1.Text)) // check if input text is not empty and matches pattern of a sum
+
+
+
+
+            Match m = regex.Match(textBox1.Text);
+
+
+            if (m.Success) // check if input text matches pattern
             {
+             
 
-                // display sum
+                switch (m.Groups[2].Value)
+                {
 
-                textBox2.Text = textBox1.Text.Split("+").Aggregate(0, (a, b) => a + int.Parse(b)).ToString();
+                    case "+":
+                        textBox2.Text = (int.Parse(m.Groups[1].Value) + int.Parse(m.Groups[3].Value)).ToString();
+                        break;
+                    case "-": 
+                        textBox2.Text = (int.Parse(m.Groups[1].Value) - int.Parse(m.Groups[3].Value)).ToString();
+                        break;
+                    case "*":
+                        textBox2.Text = (int.Parse(m.Groups[1].Value) * int.Parse(m.Groups[3].Value)).ToString();
+                        break;
+                    case "/":
+
+                        if (m.Groups[3].Value != "0")
+                        {
+                            textBox2.Text = (int.Parse(m.Groups[1].Value) / int.Parse(m.Groups[3].Value)).ToString();
+                        }
+                        else
+                        {
+                            // toggle message color to red to indicate error
+                            if (message.ForeColor == Color.Green)
+                            {
+                                message.ForeColor = Color.Red;
+                            }
+
+                            return;
+
+                        }
+                        break;
+
+
+
+
+                }
+                
 
                 // toggle message color to green to indicate success
 
